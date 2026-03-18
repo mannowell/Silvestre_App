@@ -1,6 +1,6 @@
 # 🌿 SilvestreStock - Gestão Avançada de Fauna
 
-SilvestreStock é uma plataforma **LegalTech Ambiental** de alta complexidade desenvolvida para o controle, inventário e monitoramento de animais silvestres. Com um design focado na estética "Nature-Tech", o sistema une a potência do Bootstrap 5 com a elegância do Glassmorphism e CSS avançado.
+SilvestreStock é uma plataforma **LegalTech Ambiental** desenvolvida para o controle, inventário e monitoramento de animais silvestres. Com um design focado na estética "Nature-Tech", o sistema une a potência do Bootstrap 5 com a elegância do Glassmorphism e CSS avançado.
 
 ## 🚀 Funcionalidades Principais
 
