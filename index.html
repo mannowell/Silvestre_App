@@ -4,170 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SilvestreStock | Gestão de Fauna</title>
-    
+    <meta name="description" content="SilvestreStock — Sistema avançado de gestão de fauna e biodiversidade. Monitoramento em tempo real de espécimes, geomonitoramento e controlo de suprimentos.">
+
     <!-- Bootstrap 5 CDN -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Google Fonts: Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
-    <!-- Icons -->
+    <!-- Bootstrap Icons -->
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body>
 
-    <div class="container-fluid p-0 d-flex min-vh-100">
-        <!-- Sidebar -->
-        <nav class="sidebar glass-panel m-3 d-none d-lg-flex flex-column p-4" style="width: 280px;">
-            <div class="brand mb-5 d-flex align-items-center">
-                <i class="bi bi-tree-fill text-emerald fs-2 me-3"></i>
-                <h3 class="m-0 fw-bold text-gradient">S-Stock</h3>
+    <div class="app-wrapper">
+        <!-- ===== SIDEBAR ===== -->
+        <nav class="sidebar glass-panel" id="sidebar">
+            <div class="sidebar-header">
+                <div class="brand d-flex align-items-center gap-3">
+                    <div class="brand-icon">
+                        <i class="bi bi-tree-fill"></i>
+                    </div>
+                    <div>
+                        <h3 class="m-0 fw-bold text-gradient">S-Stock</h3>
+                        <span class="text-muted" style="font-size: 0.7rem; letter-spacing:1px;">WILDLIFE SYSTEM</span>
+                    </div>
+                </div>
+                <button class="btn-close-sidebar d-lg-none" id="btn-close-sidebar">
+                    <i class="bi bi-x-lg"></i>
+                </button>
             </div>
-            
-            <ul class="nav flex-column gap-3 mb-auto">
-                <li class="nav-item">
-                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center active">
-                        <i class="bi bi-grid-1x2-fill me-3"></i> Dashboard
+
+            <div class="sidebar-search mb-3">
+                <div class="search-input-wrapper">
+                    <i class="bi bi-search search-icon"></i>
+                    <input type="text" id="sidebar-search" placeholder="Pesquisar módulo..." class="sidebar-search-input">
+                </div>
+            </div>
+
+            <ul class="nav flex-column gap-2 mb-auto" id="nav-menu">
+                <li class="nav-item" data-label="Dashboard">
+                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center active" data-page="dashboard" id="nav-dashboard">
+                        <i class="bi bi-grid-1x2-fill me-3"></i>
+                        <span>Dashboard</span>
+                        <i class="bi bi-chevron-right ms-auto nav-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center">
-                        <i class="bi bi-paw-fill me-3"></i> Inventário
+                <li class="nav-item" data-label="Inventário">
+                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center" data-page="inventory" id="nav-inventory">
+                        <i class="bi bi-paw-fill me-3"></i>
+                        <span>Inventário</span>
+                        <i class="bi bi-chevron-right ms-auto nav-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center">
-                        <i class="bi bi-geo-alt-fill me-3"></i> Geomonitoramento
+                <li class="nav-item" data-label="Geomonitoramento">
+                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center" data-page="geo" id="nav-geo">
+                        <i class="bi bi-geo-alt-fill me-3"></i>
+                        <span>Geomonitoramento</span>
+                        <i class="bi bi-chevron-right ms-auto nav-arrow"></i>
                     </a>
                 </li>
-                <li class="nav-item">
-                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center">
-                        <i class="bi bi-box-seam-fill me-3"></i> Suprimentos
+                <li class="nav-item" data-label="Suprimentos">
+                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center" data-page="supplies" id="nav-supplies">
+                        <i class="bi bi-box-seam-fill me-3"></i>
+                        <span>Suprimentos</span>
+                        <span class="nav-badge" id="supplies-badge">!</span>
+                    </a>
+                </li>
+                <li class="nav-item" data-label="Alertas IBAMA">
+                    <a href="#" class="nav-link glass-card p-3 d-flex align-items-center" data-page="alerts" id="nav-alerts">
+                        <i class="bi bi-shield-exclamation me-3 text-accent"></i>
+                        <span>Alertas IBAMA</span>
+                        <span class="nav-badge alert-badge" id="alerts-badge">3</span>
                     </a>
                 </li>
             </ul>
-            
-            <div class="user-profile glass-card p-3 mt-4 mt-auto">
-                <div class="d-flex align-items-center">
-                    <div class="avatar bg-emerald me-3 rounded-circle" style="width: 40px; height: 40px;"></div>
-                    <div>
-                        <p class="m-0 fw-bold small">Dr. Silvestre</p>
-                        <span class="text-muted small">Administrador</span>
+
+            <div class="user-profile glass-card p-3 mt-auto" id="user-profile-btn" role="button" title="Perfil do utilizador">
+                <div class="d-flex align-items-center gap-3">
+                    <div class="avatar-circle">
+                        <span>DS</span>
                     </div>
+                    <div class="flex-grow-1">
+                        <p class="m-0 fw-bold small">Dr. Silvestre</p>
+                        <span class="text-muted" style="font-size:0.72rem;">Administrador</span>
+                    </div>
+                    <i class="bi bi-three-dots-vertical text-muted"></i>
                 </div>
             </div>
         </nav>
+        <!-- Sidebar Overlay (mobile) -->
+        <div class="sidebar-overlay" id="sidebar-overlay"></div>
 
-        <!-- Main Content -->
-        <main class="flex-grow-1 p-4 d-flex flex-column overflow-auto">
+        <!-- ===== MAIN CONTENT ===== -->
+        <main class="main-content" id="main-content">
+
             <!-- Header -->
-            <header class="d-flex justify-content-between align-items-center mb-5 animate-fade">
-                <div>
-                    <h1 class="fw-bold m-0">Painel Bio-Analítico</h1>
-                    <p class="text-muted">Monitoramento de fauna em tempo real</p>
-                </div>
-                <div class="d-flex gap-3">
-                    <button class="btn btn-emerald glass-card border-0 px-4 py-2">
-                        <i class="bi bi-plus-lg me-2"></i> Novo Registro
-                    </button>
-                    <button class="btn btn-outline-light d-lg-none glass-card border-0">
+            <header class="app-header animate-fade" id="app-header">
+                <div class="header-left">
+                    <button class="btn-hamburger d-lg-none" id="btn-hamburger">
                         <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <div>
+                        <h1 class="fw-bold m-0" id="page-title">Painel Bio-Analítico</h1>
+                        <p class="text-muted m-0" id="page-subtitle">Monitoramento de fauna em tempo real</p>
+                    </div>
+                </div>
+                <div class="header-actions">
+                    <button class="btn btn-icon glass-card border-0" id="btn-notifications" title="Notificações">
+                        <i class="bi bi-bell-fill"></i>
+                        <span class="notif-dot"></span>
+                    </button>
+                    <button class="btn btn-emerald glass-card border-0 px-4 py-2" id="btn-novo-registro">
+                        <i class="bi bi-plus-lg me-2"></i> Novo Registro
                     </button>
                 </div>
             </header>
 
-            <!-- Stats Grid -->
-            <div class="row g-4 mb-5 animate-fade" style="animation-delay: 0.2s;">
-                <div class="col-md-3">
-                    <div class="glass-card p-4 text-center">
-                        <span class="text-muted d-block mb-2">Total de Espécimes</span>
-                        <h2 class="fw-bold m-0 display-6">1,248</h2>
-                        <span class="badge bg-emerald-light text-emerald mt-2">+12% este mês</span>
+            <!-- ===== PAGE: DASHBOARD ===== -->
+            <div class="page-section active" id="page-dashboard">
+                <!-- Stats Grid -->
+                <div class="row g-4 mb-4 animate-fade" style="animation-delay: 0.1s;">
+                    <div class="col-6 col-lg-3">
+                        <div class="glass-card stat-card p-4 text-center" id="stat-especimes">
+                            <div class="stat-icon mb-2"><i class="bi bi-collection-fill text-emerald"></i></div>
+                            <span class="text-muted d-block mb-1 small">Total de Espécimes</span>
+                            <h2 class="fw-bold m-0 display-6" id="stat-total">1,248</h2>
+                            <span class="badge bg-emerald-light text-emerald mt-2">+12% este mês</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="glass-card stat-card p-4 text-center">
+                            <div class="stat-icon mb-2"><i class="bi bi-diagram-3-fill text-info"></i></div>
+                            <span class="text-muted d-block mb-1 small">Espécies Catalogadas</span>
+                            <h2 class="fw-bold m-0 display-6" id="stat-species">42</h2>
+                            <span class="text-muted small">8 Classes</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="glass-card stat-card p-4 text-center">
+                            <div class="stat-icon mb-2"><i class="bi bi-heart-pulse-fill text-emerald"></i></div>
+                            <span class="text-muted d-block mb-1 small">Status Sanitário</span>
+                            <h2 class="fw-bold m-0 display-6 text-emerald" id="stat-health">98%</h2>
+                            <span class="text-muted small">Excelente</span>
+                        </div>
+                    </div>
+                    <div class="col-6 col-lg-3">
+                        <div class="glass-card stat-card p-4 text-center border-accent">
+                            <div class="stat-icon mb-2"><i class="bi bi-shield-exclamation text-accent"></i></div>
+                            <span class="text-muted d-block mb-1 small">Alertas IBAMA</span>
+                            <h2 class="fw-bold m-0 display-6 text-accent" id="stat-alerts">03</h2>
+                            <span class="text-accent small">Pendências Urgentes</span>
+                        </div>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <div class="glass-card p-4 text-center">
-                        <span class="text-muted d-block mb-2">Espécies Catalogadas</span>
-                        <h2 class="fw-bold m-0 display-6">42</h2>
-                        <span class="text-muted small">8 Classes</span>
+
+                <!-- Chart + Activity -->
+                <div class="row g-4 flex-grow-1 animate-fade" style="animation-delay: 0.3s;">
+                    <div class="col-lg-8">
+                        <div class="glass-panel p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="m-0 fw-bold">Fluxo Populacional</h5>
+                                <select class="form-select form-select-sm chart-select" id="chart-period" style="width: auto;">
+                                    <option value="30">Últimos 30 dias</option>
+                                    <option value="90">Últimos 3 meses</option>
+                                    <option value="180">Últimos 6 meses</option>
+                                    <option value="365">Último ano</option>
+                                </select>
+                            </div>
+                            <div style="position: relative; height: 300px;">
+                                <canvas id="populationChart"></canvas>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="glass-card p-4 text-center">
-                        <span class="text-muted d-block mb-2">Status Sanitário</span>
-                        <h2 class="fw-bold m-0 display-6 text-emerald">98%</h2>
-                        <span class="text-muted small">Excelente</span>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="glass-card p-4 text-center border-accent">
-                        <span class="text-muted d-block mb-2">Alertas IBAMA</span>
-                        <h2 class="fw-bold m-0 display-6 text-accent">03</h2>
-                        <span class="text-accent small">Pendências Urgentes</span>
+                    <div class="col-lg-4">
+                        <div class="glass-panel p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="m-0 fw-bold">Atividade Recente</h5>
+                                <button class="btn btn-sm btn-link text-muted p-0" id="btn-clear-feed">Limpar</button>
+                            </div>
+                            <div class="activity-feed d-flex flex-column gap-3" id="activity-feed">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
 
-            <!-- Dashboard Content -->
-            <div class="row g-4 flex-grow-1 animate-fade" style="animation-delay: 0.4s;">
-                <div class="col-lg-8">
-                    <div class="glass-panel h-100 p-4">
-                        <div class="d-flex justify-content-between align-items-center mb-4">
-                            <h5 class="m-0 fw-bold">Fluxo Populacional</h5>
-                            <select class="form-select bg-transparent text-light border-0 w-auto">
-                                <option>Últimos 30 dias</option>
-                            </select>
-                        </div>
-                        <!-- Placeholder for Chart -->
-                        <div id="populationChart" class="w-100 bg-dark-subtle rounded-3" style="height: 350px;">
-                            <div class="h-100 d-flex align-items-center justify-content-center text-muted">
-                                [Área do Gráfico de Dados]
+            <!-- ===== PAGE: INVENTÁRIO ===== -->
+            <div class="page-section" id="page-inventory">
+                <div class="d-flex justify-content-between align-items-center mb-4 animate-fade">
+                    <div class="d-flex gap-2 flex-wrap">
+                        <input type="text" id="inventory-search" placeholder="🔍 Buscar espécie..." class="form-control inventory-search-input">
+                        <select class="form-select" id="inventory-filter-status" style="width: auto;">
+                            <option value="">Todos os status</option>
+                            <option value="Vulnerável">Vulnerável</option>
+                            <option value="Em Perigo">Em Perigo</option>
+                            <option value="Quase Ameaçada">Quase Ameaçada</option>
+                            <option value="Pouco Preocupante">Pouco Preocupante</option>
+                        </select>
+                    </div>
+                    <div class="d-flex gap-2">
+                        <button class="btn btn-outline-secondary btn-sm glass-card border-0" id="btn-export-inventory">
+                            <i class="bi bi-download me-1"></i> Exportar
+                        </button>
+                        <button class="btn btn-emerald btn-sm glass-card border-0 px-3" id="btn-add-species">
+                            <i class="bi bi-plus-lg me-1"></i> Adicionar
+                        </button>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-0 overflow-hidden animate-fade" style="animation-delay: 0.15s;">
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle m-0" id="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Espécie</th>
+                                    <th>Nome Científico</th>
+                                    <th>Qtd.</th>
+                                    <th>Status IUCN</th>
+                                    <th>Saúde</th>
+                                    <th>Último Checkup</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="p-3 d-flex justify-content-between align-items-center border-top border-glass text-muted small">
+                        <span id="inventory-count">0 registos</span>
+                        <div class="d-flex gap-2" id="inventory-pagination"></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE: GEOMONITORAMENTO ===== -->
+            <div class="page-section" id="page-geo">
+                <div class="row g-4 animate-fade">
+                    <div class="col-lg-8">
+                        <div class="glass-panel p-4 h-100">
+                            <div class="d-flex justify-content-between align-items-center mb-3">
+                                <h5 class="m-0 fw-bold">Mapa de Distribuição</h5>
+                                <div class="d-flex gap-2">
+                                    <button class="btn btn-sm btn-outline-light glass-card border-0" id="btn-map-all">Todos</button>
+                                    <button class="btn btn-sm glass-card border-0 btn-filter-map active" data-filter="Vulnerável">Vulneráveis</button>
+                                    <button class="btn btn-sm glass-card border-0 btn-filter-map" data-filter="Em Perigo">Em Perigo</button>
+                                </div>
+                            </div>
+                            <div class="geo-map-container" id="geo-map">
+                                <!-- SVG map of Brazil with species dots rendered by JS -->
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="col-lg-4">
-                    <div class="glass-panel h-100 p-4">
-                        <h5 class="fw-bold mb-4">Atividade Recente</h5>
-                        <div class="activity-feed d-flex flex-column gap-3">
-                            <!-- Activity Item -->
-                            <div class="d-flex align-items-start gap-3">
-                                <div class="icon-circle bg-dark-subtle p-2 rounded-circle">
-                                    <i class="bi bi-plus-circle text-emerald"></i>
-                                </div>
-                                <div>
-                                    <p class="m-0 small fw-bold">Novo Ararajuba adicionado</p>
-                                    <span class="text-muted smaller">Há 15 minutos</span>
-                                </div>
+                    <div class="col-lg-4">
+                        <div class="glass-panel p-4 h-100">
+                            <h5 class="fw-bold mb-3">Localização por Espécie</h5>
+                            <div class="d-flex flex-column gap-3" id="geo-species-list">
+                                <!-- Populated by JS -->
                             </div>
-                            <!-- More items... -->
                         </div>
                     </div>
                 </div>
             </div>
+
+            <!-- ===== PAGE: SUPRIMENTOS ===== -->
+            <div class="page-section" id="page-supplies">
+                <div class="row g-4 mb-4 animate-fade">
+                    <div class="col-md-4">
+                        <div class="glass-card stat-card p-4 text-center">
+                            <div class="stat-icon mb-2"><i class="bi bi-box2-heart-fill text-emerald"></i></div>
+                            <span class="text-muted d-block mb-1 small">Total de Itens</span>
+                            <h2 class="fw-bold m-0 display-6" id="supply-total">24</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card stat-card p-4 text-center border-accent">
+                            <div class="stat-icon mb-2"><i class="bi bi-exclamation-triangle-fill text-accent"></i></div>
+                            <span class="text-muted d-block mb-1 small">Stock Crítico</span>
+                            <h2 class="fw-bold m-0 display-6 text-accent" id="supply-critical">3</h2>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <div class="glass-card stat-card p-4 text-center">
+                            <div class="stat-icon mb-2"><i class="bi bi-truck text-info"></i></div>
+                            <span class="text-muted d-block mb-1 small">Pedidos Pendentes</span>
+                            <h2 class="fw-bold m-0 display-6" id="supply-pending">2</h2>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="glass-panel p-0 overflow-hidden animate-fade" style="animation-delay: 0.15s;">
+                    <div class="p-4 d-flex justify-content-between align-items-center">
+                        <h5 class="m-0 fw-bold">Gestão de Suprimentos</h5>
+                        <button class="btn btn-emerald btn-sm glass-card border-0 px-3" id="btn-add-supply">
+                            <i class="bi bi-plus-lg me-1"></i> Novo Item
+                        </button>
+                    </div>
+                    <div class="table-responsive">
+                        <table class="table table-dark table-hover align-middle m-0">
+                            <thead>
+                                <tr>
+                                    <th class="ps-4">Item</th>
+                                    <th>Categoria</th>
+                                    <th>Stock Atual</th>
+                                    <th>Stock Mínimo</th>
+                                    <th>Status</th>
+                                    <th>Validade</th>
+                                    <th class="text-center">Ações</th>
+                                </tr>
+                            </thead>
+                            <tbody id="supplies-tbody">
+                                <!-- Populated by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ===== PAGE: ALERTAS IBAMA ===== -->
+            <div class="page-section" id="page-alerts">
+                <div class="row g-4 animate-fade">
+                    <div class="col-12">
+                        <div class="glass-panel p-4">
+                            <div class="d-flex justify-content-between align-items-center mb-4">
+                                <h5 class="m-0 fw-bold">Pendências Regulatórias IBAMA</h5>
+                                <span class="badge bg-danger px-3 py-2">3 Urgentes</span>
+                            </div>
+                            <div class="d-flex flex-column gap-3" id="alerts-list">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </main>
     </div>
 
-    <!-- Additional Custom Styles for specific components -->
-    <style>
-        .text-emerald { color: var(--primary-emerald); }
-        .text-accent { color: var(--accent-gold); }
-        .bg-emerald { background-color: var(--primary-emerald); }
-        .bg-emerald-light { background-color: rgba(16, 185, 129, 0.1); }
-        .border-accent { border-color: var(--accent-gold) !important; }
-        .smaller { font-size: 0.75rem; }
-        .text-gradient {
-            background: linear-gradient(to right, var(--primary-emerald), #6ee7b7);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
-        .nav-link { color: var(--text-muted); text-decoration: none; }
-        .nav-link.active { color: var(--text-main); border-color: var(--primary-emerald); background: rgba(16, 185, 129, 0.1); }
-        .btn-emerald { background: var(--primary-emerald); color: var(--bg-deep); font-weight: bold; }
-        .btn-emerald:hover { background: #34d399; color: var(--bg-deep); }
-    </style>
+    <!-- ===== MODAL: NOVO REGISTRO ===== -->
+    <div class="modal fade" id="modal-novo-registro" tabindex="-1" aria-labelledby="modal-novo-registro-label" aria-hidden="true">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content glass-panel border-0">
+                <div class="modal-header border-glass">
+                    <h5 class="modal-title fw-bold" id="modal-novo-registro-label">
+                        <i class="bi bi-plus-circle-fill text-emerald me-2"></i>
+                        Novo Registo de Espécime
+                    </h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-novo-registro">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Nome Comum *</label>
+                                <input type="text" class="form-control glass-input" id="field-nome" placeholder="Ex: Ararajuba" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Nome Científico *</label>
+                                <input type="text" class="form-control glass-input" id="field-cientifico" placeholder="Ex: Guaruba guarouba" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Quantidade *</label>
+                                <input type="number" class="form-control glass-input" id="field-quantidade" min="1" value="1" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Status IUCN *</label>
+                                <select class="form-select glass-input" id="field-status" required>
+                                    <option value="">Selecionar...</option>
+                                    <option value="Pouco Preocupante">Pouco Preocupante</option>
+                                    <option value="Quase Ameaçada">Quase Ameaçada</option>
+                                    <option value="Vulnerável">Vulnerável</option>
+                                    <option value="Em Perigo">Em Perigo</option>
+                                    <option value="Criticamente em Perigo">Criticamente em Perigo</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="form-label text-muted small">Condição de Saúde</label>
+                                <select class="form-select glass-input" id="field-saude">
+                                    <option value="Excelente">Excelente</option>
+                                    <option value="Bom">Bom</option>
+                                    <option value="Monitorado">Monitorado</option>
+                                    <option value="Crítico">Crítico</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Localização / Recinto</label>
+                                <input type="text" class="form-control glass-input" id="field-localizacao" placeholder="Ex: Amazônia (AM)">
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Classe Taxonômica</label>
+                                <select class="form-select glass-input" id="field-classe">
+                                    <option value="Ave">Ave</option>
+                                    <option value="Mamífero">Mamífero</option>
+                                    <option value="Réptil">Réptil</option>
+                                    <option value="Anfíbio">Anfíbio</option>
+                                    <option value="Peixe">Peixe</option>
+                                    <option value="Inseto">Inseto</option>
+                                </select>
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Observações</label>
+                                <textarea class="form-control glass-input" id="field-obs" rows="2" placeholder="Notas adicionais sobre o espécime..."></textarea>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-glass">
+                    <button type="button" class="btn btn-outline-light glass-card border-0" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-emerald glass-card border-0 px-4" id="btn-save-registro">
+                        <i class="bi bi-check-lg me-2"></i> Salvar Registo
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
 
-    <!-- Bootstrap Bundle with Popper -->
+    <!-- ===== MODAL: DETALHES ESPÉCIE ===== -->
+    <div class="modal fade" id="modal-detalhe-especie" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-0">
+                <div class="modal-header border-glass">
+                    <h5 class="modal-title fw-bold" id="detail-nome">Detalhes</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4" id="detail-body">
+                    <!-- Populated by JS -->
+                </div>
+                <div class="modal-footer border-glass">
+                    <button type="button" class="btn btn-outline-danger btn-sm" id="btn-delete-especie">
+                        <i class="bi bi-trash me-1"></i> Remover
+                    </button>
+                    <button type="button" class="btn btn-outline-light glass-card border-0" data-bs-dismiss="modal">Fechar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== MODAL: SUPRIMENTO ===== -->
+    <div class="modal fade" id="modal-supply" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content glass-panel border-0">
+                <div class="modal-header border-glass">
+                    <h5 class="modal-title fw-bold">Novo Suprimento</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <form id="form-supply">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Nome do Item *</label>
+                                <input type="text" class="form-control glass-input" id="supply-name" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label text-muted small">Categoria</label>
+                                <select class="form-select glass-input" id="supply-category">
+                                    <option value="Alimentação">Alimentação</option>
+                                    <option value="Medicamento">Medicamento</option>
+                                    <option value="Equipamento">Equipamento</option>
+                                    <option value="Higiene">Higiene</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Stock Atual</label>
+                                <input type="number" class="form-control glass-input" id="supply-stock" min="0" value="10">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="form-label text-muted small">Stock Mínimo</label>
+                                <input type="number" class="form-control glass-input" id="supply-min" min="0" value="5">
+                            </div>
+                            <div class="col-12">
+                                <label class="form-label text-muted small">Data de Validade</label>
+                                <input type="date" class="form-control glass-input" id="supply-expiry">
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer border-glass">
+                    <button type="button" class="btn btn-outline-light" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="button" class="btn btn-emerald border-0 px-4" id="btn-save-supply">
+                        <i class="bi bi-check-lg me-2"></i> Salvar
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== TOAST de feedback ===== -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" style="z-index: 9999;">
+        <div id="app-toast" class="toast align-items-center border-0 glass-panel" role="alert">
+            <div class="d-flex">
+                <div class="toast-body" id="toast-message">
+                    Operação realizada com sucesso!
+                </div>
+                <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script src="js/app.js"></script>
 </body>
